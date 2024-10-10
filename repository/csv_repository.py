@@ -156,7 +156,7 @@ def init_accident_db():
 
         in_areas_list = False
         for area in by_areas_list:
-            if area == row["BEAT_OF_OCCURRENCE"]:
+            if area["beat"] == row["BEAT_OF_OCCURRENCE"]:
                 area["injuries_total"] += to_int(row["INJURIES_TOTAL"])
                 area["injuries_fatal"] += to_int(row["INJURIES_FATAL"])
                 area["crashs_list"].append(id)
