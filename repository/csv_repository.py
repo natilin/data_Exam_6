@@ -30,12 +30,12 @@ def init_accident_db():
 
     line = 0
     for row in read_csv(csv_path):
-        if line > 1000:
-            break
+        # if line > 1000:
+        #     break
         line += 1
         day = parse_date(row["CRASH_DATE"])
         week = get_week_range(day)
-        id = unique_id = str(uuid.uuid4())
+        id = str(uuid.uuid4())
         total = to_int(row["INJURIES_TOTAL"])
 
         accident = {
@@ -51,20 +51,38 @@ def init_accident_db():
         }
         accident_list.append(accident)
 
-        in_the_day_list = False
+
+        updated_day_list = False
+        in_the_day_beats = False
         for crash in by_days_list:
+            if updated_day_list:
+                break
             if day.strftime('%Y-%m-%d') == crash["crash_date"]:
-                if
-                crash["injuries_total"] += to_int(row["INJURIES_TOTAL"])
-                in_the_day_list = True
+                for beat_in_day in crash["beats"]:
+                    if in_the_day_beats:
+                        break
+
+                    elif row["BEAT_OF_OCCURRENCE"] in beat_in_day:
+                        beat_in_day[row["BEAT_OF_OCCURRENCE"]]["accident_total"] += 1
+                        in_the_day_beats = True
+                        updated_day_list = True
+                        break
+
+                if not in_the_day_beats:
+                    crash["beats"].append({row["BEAT_OF_OCCURRENCE"]: {"accident_total": 1}})
+                    updated_day_list = True
                 break
 
-        if not in_the_day_list:
+
+
+        if not updated_day_list:
             by_day = {
                 "crash_date": day.strftime('%Y-%m-%d'),
                 "beats": [{row["BEAT_OF_OCCURRENCE"]: {"accident_total": 1}}]
             }
             by_days_list.append(by_day)
+
+        # week collection
 
         updated_week_list = False
         in_beats = False
@@ -81,7 +99,7 @@ def init_accident_db():
                         break
 
                     elif row["BEAT_OF_OCCURRENCE"] in beat:
-                        beat[row["BEAT_OF_OCCURRENCE"]]["injuries_total"] += 1
+                        beat[row["BEAT_OF_OCCURRENCE"]]["accident_total"] += 1
                         in_beats = True
                         updated_week_list = True
                         break
@@ -114,7 +132,7 @@ def init_accident_db():
                         break
 
                     elif row["BEAT_OF_OCCURRENCE"] in beat:
-                        beat[row["BEAT_OF_OCCURRENCE"]]["injuries_total"] += 1
+                        beat[row["BEAT_OF_OCCURRENCE"]]["accident_total"] += 1
                         in_beat_of_month = True
                         updated_month_list = True
                         break
