@@ -2,7 +2,7 @@ from pymongo import MongoClient
 
 client = MongoClient('mongodb://localhost:27017')
 
-db_accident = client["chicago-accident"]
+db_accident = client["chicago-accident_BD"]
 
 by_days = db_accident["by_day"]
 by_weeks = db_accident["by_week"]
